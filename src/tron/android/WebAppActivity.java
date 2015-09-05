@@ -56,6 +56,7 @@ public class WebAppActivity extends Activity {
 
         addJavascriptInterface( new tron.android.Log(), "Log" );
         addJavascriptInterface( new tron.android.Toast(this), "Toast" );
+        addJavascriptInterface( new tron.android.Network(this), "Network" );
 
         Display display = getWindowManager().getDefaultDisplay();
         int width = display.getWidth();
