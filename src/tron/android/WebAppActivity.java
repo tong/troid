@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 
 public class WebAppActivity extends Activity {
 
+    public static boolean DEV = true; //TODO
+
     private static final String TAG = "tron";
 
     public static final void trace( String str ) {
@@ -25,17 +27,16 @@ public class WebAppActivity extends Activity {
 
     //protected AppLayout layout;
     protected WebView webview;
+    protected SystemUi systemUi;
 
-    @Override
-    protected void onCreate( Bundle savedInstanceState ) {
+    protected void init( int webviewId, String indexFile ) {
 
-        super.onCreate( savedInstanceState );
-
-        webview = new WebView( WebAppActivity.this );
+        //webview = new WebView( WebAppActivity.this );
+        webview = (WebView) findViewById( webviewId );
         //webview.setInitialScale( 100 );
         //webview.setBackgroundColor(Color.BLACK);
-        //webview.clearCache(true);
-        webview.setLayoutParams( new LinearLayout.LayoutParams( ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT, 1.0F ) );
+        webview.clearCache(true);
+    //    webview.setLayoutParams( new LinearLayout.LayoutParams( ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT, 1.0F ) );
         webview.setWebViewClient( new WebAppClient() );
         webview.setWebChromeClient( new WebAppChromeClient() );
 
@@ -54,18 +55,33 @@ public class WebAppActivity extends Activity {
         //settings.setJavaScriptCanOpenWindowsAutomatically(true);
         //settings.setSupportMultipleWindows(true);
 
-        addJavascriptInterface( new tron.android.Log(), "Log" );
-        addJavascriptInterface( new tron.android.Toast(this), "Toast" );
-        addJavascriptInterface( new tron.android.Network(this), "Network" );
-
+        /*
         Display display = getWindowManager().getDefaultDisplay();
-        int width = display.getWidth();
-		int height = display.getHeight();
+        final int displayWidth = display.getWidth();
+		final int displayHeight = display.getHeight();
 
-        AppLayout layout = new AppLayout( this, width, height );
+        AppLayout layout = new AppLayout( this, displayWidth, displayHeight );
         layout.setLayoutParams(new LinearLayout.LayoutParams( ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT, 0.0F));
         layout.addView( webview );
         setContentView( layout );
+        */
+
+        bindJavascriptInterfaces();
+        loadFile( indexFile );
+    }
+
+    protected void bindJavascriptInterfaces() {
+
+        addJavascriptInterface( new tron.android.Log(), "Log" );
+
+        systemUi = new SystemUi(this);
+        addJavascriptInterface( systemUi, "SystemUi" );
+
+        //addJavascriptInterface( new tron.android.Toast(this), "Toast" );
+        //addJavascriptInterface( new tron.android.Network(this), "Network" );
+
+        //tron.android.Tts tts = new tron.android.Tts(this);
+        //addJavascriptInterface( tts, "Tts" );
     }
 
     protected void addJavascriptInterface( Object obj, String id ) {
@@ -76,7 +92,7 @@ public class WebAppActivity extends Activity {
 		webview.loadUrl( "file:///android_asset/" + path );
 	}
 
-    protected void javascript( String script ) {
+    public void callJavascript( String script ) {
         // instance.runOnUiThread(new Messenger(instance.view, s));
         //instance.handler.post(new JavascriptMessenger(instance.webview, str));
         webview.loadUrl( "javascript:" + script );
@@ -85,6 +101,7 @@ public class WebAppActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        systemUi.apply();
         //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
@@ -100,6 +117,14 @@ public class WebAppActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
+    /*
+    @JavascriptInterface
+    public void hideNavigationControls() {
+        //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+    */
+
+    /*
     private class AppLayout extends LinearLayout {
 
         private int screenWidth = 0;
@@ -111,6 +136,7 @@ public class WebAppActivity extends Activity {
 			screenHeight = height;
         }
     }
+    */
 
     private class WebAppClient extends WebViewClient {
 
