@@ -8,12 +8,9 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.ConsoleMessage;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebChromeClient;
-import android.webkit.WebViewClient;
-import android.widget.LinearLayout;
+//import android.widget.LinearLayout;
 
 public class WebAppActivity extends Activity {
 
@@ -25,10 +22,16 @@ public class WebAppActivity extends Activity {
         android.util.Log.d( TAG, str );
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+
     //protected AppLayout layout;
     protected WebView webview;
     protected SystemUi systemUi;
 
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+    */
     protected void init( int webviewId, String indexFile ) {
 
         //webview = new WebView( WebAppActivity.this );
@@ -37,8 +40,10 @@ public class WebAppActivity extends Activity {
         //webview.setBackgroundColor(Color.BLACK);
         webview.clearCache(true);
     //    webview.setLayoutParams( new LinearLayout.LayoutParams( ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT, 1.0F ) );
-        webview.setWebViewClient( new WebAppClient() );
-        webview.setWebChromeClient( new WebAppChromeClient() );
+        //webview.setWebViewClient( new WebAppClient() );
+        //webview.setWebChromeClient( new WebAppChromeClient() );
+        createWebViewClient();
+        createWebChromeClient();
 
         WebSettings settings = webview.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -46,7 +51,7 @@ public class WebAppActivity extends Activity {
         settings.setAllowFileAccess(true);
         settings.setAllowFileAccessFromFileURLs(true);
         //settings.setAllowUniversalAccessFromFileURLs(true);
-        settings.setDomStorageEnabled(true);
+        //settings.setDomStorageEnabled(true);
         //settings.setLoadWithOverviewMode(true);
         //settings.setUseWideViewPort(true);
         //settings.setAppCacheEnabled(true);
@@ -98,12 +103,21 @@ public class WebAppActivity extends Activity {
         webview.loadUrl( "javascript:" + script );
     }
 
+    protected void createWebViewClient() {
+        webview.setWebViewClient( new WebAppClient() );
+    }
+
+    protected void createWebChromeClient() {
+        webview.setWebChromeClient( new WebChromeClient() );
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+
     @Override
     public void onResume() {
         super.onResume();
-        systemUi.apply();
-        //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        if( systemUi != null )
+            systemUi.apply();
     }
 
     @Override
@@ -117,12 +131,7 @@ public class WebAppActivity extends Activity {
         return super.onKeyDown(keyCode, event);
     }
 
-    /*
-    @JavascriptInterface
-    public void hideNavigationControls() {
-        //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-    }
-    */
+    ////////////////////////////////////////////////////////////////////////////
 
     /*
     private class AppLayout extends LinearLayout {
@@ -137,26 +146,4 @@ public class WebAppActivity extends Activity {
         }
     }
     */
-
-    private class WebAppClient extends WebViewClient {
-
-        @Override
-		public void onPageFinished( WebView webview, String url ) {
-			super.onPageFinished( webview, url );
-            //MainActivity.trace( "========== onPageFinished ==========" );
-		}
-    }
-
-    private class WebAppChromeClient extends WebChromeClient {
-
-        /*
-        @Override
-        public boolean onConsoleMessage( ConsoleMessage consoleMessage ) {
-            //android.util.Log.d(TAG,consoleMessage.message());
-            //android.util.Log.d(TAG,""+consoleMessage.lineNumber());
-            return true;
-        }
-        */
-    }
-
 }
