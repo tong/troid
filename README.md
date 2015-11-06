@@ -1,4 +1,4 @@
 
 # TROID
 
-Android library for running tron applications in a webview.
+Android base project for web applications.
